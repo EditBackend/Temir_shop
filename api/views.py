@@ -1,6 +1,14 @@
 from rest_framework.viewsets import ModelViewSet
+from django.http import JsonResponse
 from .models import Product, Sale
 from .serializers import ProductSerializer, SaleSerializer
+
+
+
+def home(request):
+    return JsonResponse({"message": "Temir Shop Backend ishlayapti!"})
+
+
 
 
 class ProductViewSet(ModelViewSet):
