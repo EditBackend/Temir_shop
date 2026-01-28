@@ -11,25 +11,37 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
+# =======================
+# SECURITY
+# =======================
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY",
+    "django-insecure-y1(gt@i9gg()mi+1iqza2n4t+7u@kwzlj8s%@+ip$l@23^lt*c"
+)
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-y1(gt@i9gg()mi+1iqza2n4t+7u@kwzlj8s%@+ip$l@23^lt*c'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['*']
+# DEBUG environment orqali boshqariladi
+DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 
-# Application definition
+# =======================
+# HOSTS
+# =======================
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "temir-shop-2.onrender.com",
+]
 
+
+# =======================
+# APPLICATIONS
+# =======================
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -37,26 +49,67 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'rest_framework',
-    'api',
     'corsheaders',
+
+    'api',
+
     'drf_spectacular',
     'drf_yasg',
 ]
 
+
+# =======================
+# MIDDLEWARE
+# =======================
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  # bu qator Cors uchun yozilgan
+    'corsheaders.middleware.CorsMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
+# =======================
+# URLS
+# =======================
 ROOT_URLCONF = 'Temir_shop.urls'
+
+
+# =======================
+# CORS & CSRF
+# =======================
 CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "https://temir-shop-2.onrender.com",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost",
+    "http://127.0.0.1",
+    "https://temir-shop-2.onrender.com",
+]
+
+
+# =======================
+# STATIC FILES (MUHIM!)
+# =======================
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+
+# =======================
+# DEFAULT
+# =======================
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 TEMPLATES = [
     {
