@@ -36,7 +36,7 @@ DEBUG = os.environ.get("DEBUG", "True") == "True"
 # HOSTS
 # =======================
 ALLOWED_HOSTS = os.environ.get(
-    "ALLOWED_HOSTS", "127.0.0.1,localhost,temir-shop-2.onrender.com"
+    "ALLOWED_HOSTS", "127.0.0.1,localhost,temir-shop-3.onrender.com"
 ).split(",")
 
 # =======================
@@ -145,13 +145,13 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # =======================
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
-    "https://temir-shop-2.onrender.com",
+    "https://temir-shop-3.onrender.com",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost",
     "http://127.0.0.1",
-    "https://temir-shop-2.onrender.com",
+    "https://temir-shop-3.onrender.com",
 ]
 
 # =======================
