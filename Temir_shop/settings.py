@@ -30,6 +30,7 @@ SECRET_KEY = os.environ.get(
     "django-insecure-y1(gt@i9gg()mi+1iqza2n4t+7u@kwzlj8s%@+ip$l@23^lt*c"
 )
 
+
 DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 # =======================
@@ -104,14 +105,11 @@ WSGI_APPLICATION = 'Temir_shop.wsgi.application'
 # =======================
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get("DB_ENGINE", "django.db.backends.sqlite3"),
-        'NAME': os.environ.get("DB_NAME", BASE_DIR / 'db.sqlite3'),
-        'USER': os.environ.get("DB_USER", ""),
-        'PASSWORD': os.environ.get("DB_PASSWORD", ""),
-        'HOST': os.environ.get("DB_HOST", ""),
-        'PORT': os.environ.get("DB_PORT", ""),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
 
 # =======================
 # PASSWORD VALIDATION
