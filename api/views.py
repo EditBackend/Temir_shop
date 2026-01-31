@@ -1,11 +1,12 @@
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
 from django.http import JsonResponse
 from django.db.models import Sum
+from django.db.models.functions import TruncDate
 from django.utils.dateparse import parse_date
-from rest_framework.decorators import api_view,permission_classes
-from django.contrib.auth import authenticate, login, logout
 from rest_framework.permissions import IsAuthenticated
-
 
 from .models import Product, Sale
 from .serializers import ProductSerializer, SaleSerializer
@@ -13,28 +14,6 @@ from .serializers import ProductSerializer, SaleSerializer
 
 def home(request):
     return JsonResponse({"message": "Temir Shop Backend ishlayapti!"})
-#login qismi
-@api_view(['POST'])
-def user_login(request):
-    username = request.data.get('username')
-    password = request.data.get('password')
-
-    user = authenticate(username=username, password=password)
-
-    if user is None:
-        return JsonResponse(
-            {"error": "Login yoki parol noto‘g‘ri"},
-            status=400
-        )
-
-    login(request, user)
-    return JsonResponse({"message": "Muvaffaqiyatli kirdingiz"})
-#logout qismi
-@api_view(['POST'])
-def user_logout(request):
-    logout(request)
-    return JsonResponse({"message": "Chiqildi"})
-
 
 
 class ProductViewSet(ModelViewSet):
@@ -42,33 +21,58 @@ class ProductViewSet(ModelViewSet):
     serializer_class = ProductSerializer
 
 
-
 class SaleViewSet(ModelViewSet):
     queryset = Sale.objects.all()
     serializer_class = SaleSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
+    def create(self, request, *args, **kwargs):
+        """
+        Sotish tugmasi bosilganda:
+        - Sale yoziladi
+        - Product.quantity kamayadi
+        """
+        product_id = request.data.get('product')
+        quantity = int(request.data.get('quantity'))
+        price = float(request.data.get('price'))
 
-        sana_from = self.request.query_params.get('sana_from')
-        sana_to = self.request.query_params.get('sana_to')
-
-        if sana_from and sana_to:
-            queryset = queryset.filter(
-                created_at__date__range=[
-                    parse_date(sana_from),
-                    parse_date(sana_to)
-                ]
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return Response(
+                {"error": "Mahsulot topilmadi"},
+                status=status.HTTP_404_NOT_FOUND
             )
-        return queryset
 
+        if product.quantity < quantity:
+            return Response(
+                {"error": "Omborda yetarli mahsulot yo‘q"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
+        sale = Sale.objects.create(
+            product=product,
+            quantity=quantity,
+            price=price,
+            customer=request.data.get('customer')
+        )
 
+        # Ombordagi miqdorni kamaytirish
+        product.quantity -= quantity
+        product.save()
+
+        serializer = self.get_serializer(sale)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 @api_view(['GET'])
 def sales_summary(request):
+    """
+    Sana oralig‘ida:
+    - umumiy kirim
+    - qaysi kuni qaysi mahsulot qancha sotilgani
+    - 1 dona mahsulot narxi (price)
+    """
     sana_from = request.query_params.get('sana_from')
     sana_to = request.query_params.get('sana_to')
 
@@ -82,12 +86,27 @@ def sales_summary(request):
             ]
         )
 
+    # Umumiy kirim
     total_income = sales.aggregate(
         total=Sum('total_price')
     )['total'] or 0
 
+    # 🔥 SANA + MAHSULOT + PRICE BO‘YICHA HISOBOT
+    daily_product_sales = (
+        sales
+        .annotate(date=TruncDate('created_at'))
+        .values('date', 'product__id', 'product__name')
+        .annotate(
+            sold_quantity=Sum('quantity'),
+            total_sales=Sum('total_price'),
+            price=Sum('total_price') / Sum('quantity')
+        )
+        .order_by('date')
+    )
+
     return JsonResponse({
         "sana_from": sana_from,
         "sana_to": sana_to,
-        "jami_kirim": total_income
+        "jami_kirim": total_income,
+        "hisobot": list(daily_product_sales)
     })

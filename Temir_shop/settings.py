@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-y1(gt@i9gg()mi+1iqza2n4t+7u@kwzlj8s%@+ip$l@23^lt*c
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "temir-shop-6.onrender.com",
+    "temir-shop-7.onrender.com",
     "localhost",
     "127.0.0.1",
 ]
@@ -63,11 +63,11 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'Temir_shop.urls'
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
-    "https://temir-shop-6.onrender.com",
+    "https://temir-shop-7.onrender.com",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://temir-shop-6.onrender.com",
+    "https://temir-shop-7.onrender.com",
 ]
 
 TEMPLATES = [
