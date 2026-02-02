@@ -4,7 +4,7 @@ class Product(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     price = models.FloatField(null=True, blank=True)
     quantity = models.IntegerField(null=True, blank=True)
-    comment = models.CharField(max_length=500)
+    comment = models.CharField(max_length=500,null=True, blank=True)
     unity = models.CharField()
     STATUS_CHOICES = (
         ('dona', 'dona'),
@@ -21,6 +21,7 @@ class Product(models.Model):
     unity = models.CharField(max_length=50)
     def __str__(self):
         return self.name if self.name else "Nomsiz mahsulot"
+
 
 
 
