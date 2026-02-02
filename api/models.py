@@ -1,14 +1,27 @@
 from django.db import models
 
-
 class Product(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     price = models.FloatField(null=True, blank=True)
     quantity = models.IntegerField(null=True, blank=True)
+    comment = models.CharField(max_length=500)
+    unity = models.CharField()
+    STATUS_CHOICES = (
+        ('dona', 'dona'),
+        ('kg', 'kg'),
+        ('metr', 'metr'),
+    )
 
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default='dona'
+    )
 
+    unity = models.CharField(max_length=50)
     def __str__(self):
         return self.name if self.name else "Nomsiz mahsulot"
+
 
 
 class Sale(models.Model):
